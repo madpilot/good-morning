@@ -1,0 +1,11 @@
+.avatar {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  font-size: 1rem;
+  line-height: 2rem;
+  text-align: center;
+  border-radius: 100%;
+  background-color: var(--default-avatar-color);
+  color: #fff;
+}
