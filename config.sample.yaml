@@ -1,0 +1,7 @@
+title: My Family
+accounts: []
+users:
+  - name: Mum
+    color: "#3788d8"
+  - name: Dad
+    color: "#37d876"
