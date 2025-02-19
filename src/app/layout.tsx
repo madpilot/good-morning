@@ -1,4 +1,5 @@
 import NavItem from "@/components/nav-item";
+import "./layout.css";
 import styles from "./layout.module.css";
 import { Header } from "@/components/header";
 import { readConfig } from "@/config";
