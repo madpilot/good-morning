@@ -2,6 +2,7 @@ import { fetchEvents } from "@/data/calendar";
 import FullCalendar from "@/wrapper/FullCalendar";
 import "./calendar.css";
 import { readConfig } from "@/config";
+import { Metadata } from "next";
 
 export default async function Calendar(): Promise<React.ReactElement> {
   const config = await readConfig();
@@ -25,3 +26,7 @@ export default async function Calendar(): Promise<React.ReactElement> {
     </>
   );
 }
+
+export const metadata: Metadata = {
+  title: "Calendar - Good Morning!",
+};
