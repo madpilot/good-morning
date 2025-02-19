@@ -30,3 +30,7 @@
 .avatar {
   margin-right: 0.5rem;
 }
+
+.avatar:last-child {
+  margin-right: 1rem;
+}
