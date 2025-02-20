@@ -8,16 +8,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag good-morning
-    - name: Tag version
-      run: docker tag good-morning ${{ secrets.DOCKER_USERNAME }}/good-morning:${{ github.event.release.tag_name }}
-    - name: Tag latest
-      run: docker tag good-morning ${{ secrets.DOCKER_USERNAME }}/good-morning:latest
-    - name: Push Docker image to Docker Hub
-      uses: docker/push-action@v1
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-        repository: good-morning
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/good-morning:latest
+            ${{ secrets.DOCKER_USERNAME }}/good-morning:${{ github.event.release.tag_name }}
