@@ -2,20 +2,17 @@ import NavItem from "@/components/nav-item";
 import "./layout.css";
 import styles from "./layout.module.css";
 import { Header } from "@/components/header";
-import { readConfig } from "@/config";
 
 type LayoutProps = {
   children: React.ReactNode;
 };
 
 export default async function RootLayout({ children }: LayoutProps) {
-  const config = await readConfig();
-
   return (
     <html lang="en">
       <body>
         <div className={styles.layout}>
-          <Header className={styles.header} config={config} />
+          <Header className={styles.header} />
           <nav className={styles.nav}>
             <li className={styles.navItem}>
               <NavItem href="/" className={styles.navLink}>
