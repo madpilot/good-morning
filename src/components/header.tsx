@@ -1,14 +1,14 @@
 import { Time } from "./time";
 import styles from "./header.module.css";
 import { Avatar } from "./Avatar";
-import { Config } from "@/config";
+import { readConfig } from "@/config";
 
 type HeaderProps = {
-  config: Config;
   className?: string;
 };
 
-export function Header({ className, config }: HeaderProps) {
+export async function Header({ className }: HeaderProps) {
+  const config = await readConfig();
   return (
     <header className={`${styles.header} ${className ?? ""}`}>
       <h1 className={styles.name}>{config.title}</h1>
