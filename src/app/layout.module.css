@@ -27,13 +27,30 @@
 
 .navItem {
   list-style-type: none;
-  margin: 0;
+  margin: 0 0 1rem 0;
   padding: 0;
+}
+
+.icon {
+  color: currentColor;
+  grid-area: icon;
+  margin: auto;
+}
+
+.label {
+  grid-area: label;
+  margin: auto;
 }
 
 .navLink {
   color: var(--foreground-color);
   text-decoration: none;
+  display: grid;
+  grid-template-areas:
+    "icon"
+    "label";
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
 }
 
 .main {
