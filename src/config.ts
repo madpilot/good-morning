@@ -11,6 +11,12 @@ const iCloudAccountSchema = zod.object({
   calendars: zod.array(zod.string()),
 });
 
+const TandoorSchema = zod.object({
+  type: zod.enum(["tandoor"]),
+  server: zod.string(),
+  api_key: zod.string(),
+});
+
 const UsersSchema = zod.object({
   name: zod.string(),
   color: zod.optional(zod.string()),
@@ -21,12 +27,14 @@ const ConfigSchema = zod.object({
   title: zod.string(),
   accounts: zod.array(iCloudAccountSchema),
   users: zod.array(UsersSchema),
+  meal_plan: zod.optional(TandoorSchema),
 });
 
 export type Config = zod.infer<typeof ConfigSchema>;
 
 export type iCloudAccountConfig = zod.infer<typeof iCloudAccountSchema>;
-export type UsersSchema = zod.infer<typeof UsersSchema>;
+export type Users = zod.infer<typeof UsersSchema>;
+export type Tandoor = zod.infer<typeof TandoorSchema>;
 
 export async function readConfig(): Promise<Config> {
   const data = await readFile("./config.yaml", { encoding: "utf-8" });
