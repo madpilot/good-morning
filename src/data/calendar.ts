@@ -46,7 +46,9 @@ export type CalendarEvent = {
 };
 
 export async function fetchEvents(
-  config: iCloudAccountConfig
+  config: iCloudAccountConfig,
+  startDay: DateTime = DateTime.now().startOf("week"),
+  endDay: DateTime = DateTime.now().endOf("week")
 ): Promise<Array<CalendarEvent>> {
   const client = auth(config);
   await client.login();
@@ -60,8 +62,15 @@ export async function fetchEvents(
     return [];
   }
 
-  const start = DateTime.now().startOf("month").toISO();
-  const end = DateTime.now().endOf("month").toISO();
+  const start = startDay.toISO();
+  const end = endDay.toISO();
+
+  if (!start) {
+    throw new Error("Invalid start date");
+  }
+  if (!end) {
+    throw new Error("Invalid end date");
+  }
 
   const objects = await client.fetchCalendarObjects({
     calendar: family,
