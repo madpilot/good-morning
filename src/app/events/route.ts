@@ -2,9 +2,6 @@ import { DateTime } from "luxon";
 import { NextRequest } from "next/server";
 import getEvents from "./get";
 
-// Invalidate every 15 minutes
-export const revalidate = 15 * 60;
-
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const searchParams = url.searchParams;
@@ -18,3 +15,7 @@ export async function GET(request: NextRequest) {
   const events = await getEvents(start, end);
   return Response.json(events);
 }
+
+// Invalidate every 15 minutes
+export const revalidate = 900;
+export const config = {};
