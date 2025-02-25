@@ -5,6 +5,8 @@ export function middleware(request: NextRequest) {
   // This is fucking ridiculous
   const headers = new Headers(request.headers);
   headers.set("x-current-path", request.nextUrl.pathname);
+  headers.set("x-search", request.nextUrl.search);
+
   return NextResponse.next({ headers });
 }
 

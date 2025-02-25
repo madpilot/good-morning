@@ -1,41 +1,33 @@
 "use client";
 
 import { Config } from "@/config";
-import { CalendarEvent } from "@/data/calendar";
 import FullCalendarKlass from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { DateTime } from "luxon";
-import { useRouter } from "next/navigation";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 type FullCalendarProps = {
-  events: Array<CalendarEvent>;
   config: Config;
 };
 
 // Fifteen minutes
 const RELOAD_TIME = 900 as const;
-
-export async function getStaticProps() {
-  return {
-    revalidate: RELOAD_TIME,
-  };
-}
-
-export default function FullCalendar({ events, config }: FullCalendarProps) {
-  const router = useRouter();
+export default function FullCalendar({ config }: FullCalendarProps) {
+  const calendarRef = useRef<FullCalendarKlass>(null);
   const [scrollTime, setScrollTime] = useState<string>(
     DateTime.now().startOf("hour").toFormat("HH:mm:ss")
   );
 
   useEffect(() => {
     const id = setInterval(() => {
-      router.refresh();
+      if (calendarRef?.current) {
+        calendarRef.current.getApi().refetchEvents();
+      }
       setScrollTime(DateTime.now().startOf("hour").toFormat("HH:mm:ss"));
     }, RELOAD_TIME * 1000);
 
     return () => clearInterval(id);
-  }, [router, setScrollTime]);
+  }, [setScrollTime]);
 
   useLayoutEffect(() => {
     // Heh, this is terrible...
@@ -57,6 +49,7 @@ export default function FullCalendar({ events, config }: FullCalendarProps) {
 
   return (
     <FullCalendarKlass
+      ref={calendarRef}
       plugins={[timeGridPlugin]}
       initialView="timeGridWeek"
       themeSystem="standard"
@@ -65,7 +58,6 @@ export default function FullCalendar({ events, config }: FullCalendarProps) {
       scrollTime={scrollTime}
       dayHeaderContent={(args) => {
         const date = DateTime.fromJSDate(args.date);
-
         return (
           <>
             {date.toFormat("EEE")}{" "}
@@ -86,7 +78,7 @@ export default function FullCalendar({ events, config }: FullCalendarProps) {
           }, undefined) ?? ""
         );
       }}
-      events={events}
+      events="/events"
     />
   );
 }
