@@ -5,6 +5,7 @@ import FullCalendarKlass from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { DateTime } from "luxon";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Header } from "./Header";
 
 type FullCalendarProps = {
   config: Config;
@@ -17,6 +18,8 @@ export default function FullCalendar({ config }: FullCalendarProps) {
   const [scrollTime, setScrollTime] = useState<string>(
     DateTime.now().startOf("hour").toFormat("HH:mm:ss")
   );
+
+  const [isLoading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -48,37 +51,41 @@ export default function FullCalendar({ config }: FullCalendarProps) {
   }, [config]);
 
   return (
-    <FullCalendarKlass
-      ref={calendarRef}
-      plugins={[timeGridPlugin]}
-      initialView="timeGridWeek"
-      themeSystem="standard"
-      nowIndicator={true}
-      headerToolbar={{ left: "", right: "title today prev,next" }}
-      scrollTime={scrollTime}
-      dayHeaderContent={(args) => {
-        const date = DateTime.fromJSDate(args.date);
-        return (
-          <>
-            {date.toFormat("EEE")}{" "}
-            <span className="fc-day-today-highlight">
-              {date.toFormat("dd")}
-            </span>
-          </>
-        );
-      }}
-      eventClassNames={(args) => {
-        return (
-          config.users.reduce<string | undefined>((className, user) => {
-            const names = [user.name, ...(user.nicknames ?? [])];
-            if (args.event.title.match(new RegExp(names.join("|"), "i"))) {
-              return `user-${user.name.toLowerCase()}`;
-            }
-            return className;
-          }, undefined) ?? ""
-        );
-      }}
-      events="/events"
-    />
+    <>
+      <Header calendar={calendarRef?.current} isLoading={isLoading} />
+      <FullCalendarKlass
+        ref={calendarRef}
+        plugins={[timeGridPlugin]}
+        initialView="timeGridWeek"
+        themeSystem="standard"
+        nowIndicator={true}
+        headerToolbar={false}
+        scrollTime={scrollTime}
+        loading={setLoading}
+        dayHeaderContent={(args) => {
+          const date = DateTime.fromJSDate(args.date);
+          return (
+            <>
+              {date.toFormat("EEE")}{" "}
+              <span className="fc-day-today-highlight">
+                {date.toFormat("d")}
+              </span>
+            </>
+          );
+        }}
+        eventClassNames={(args) => {
+          return (
+            config.users.reduce<string | undefined>((className, user) => {
+              const names = [user.name, ...(user.nicknames ?? [])];
+              if (args.event.title.match(new RegExp(names.join("|"), "i"))) {
+                return `user-${user.name.toLowerCase()}`;
+              }
+              return className;
+            }, undefined) ?? ""
+          );
+        }}
+        events="/events"
+      />
+    </>
   );
 }
