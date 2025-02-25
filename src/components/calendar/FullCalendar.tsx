@@ -5,7 +5,7 @@ import FullCalendarKlass from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { DateTime } from "luxon";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Header } from "./Header";
+import { ThreeDot } from "react-loading-indicators";
 
 type FullCalendarProps = {
   config: Config;
@@ -52,11 +52,27 @@ export default function FullCalendar({ config }: FullCalendarProps) {
 
   return (
     <>
-      <Header calendar={calendarRef?.current} isLoading={isLoading} />
+      {isLoading && (
+        <div className="fc fc-spinner">
+          <ThreeDot
+            variant="pulsate"
+            color="currentColor"
+            size="small"
+            text=""
+            textColor=""
+          />
+        </div>
+      )}
       <FullCalendarKlass
         ref={calendarRef}
         plugins={[timeGridPlugin]}
-        initialView="timeGridWeek"
+        initialView="timeGridFourDay"
+        views={{
+          timeGridFourDay: {
+            type: "timeGrid",
+            dayCount: 4,
+          },
+        }}
         themeSystem="standard"
         nowIndicator={true}
         headerToolbar={false}
