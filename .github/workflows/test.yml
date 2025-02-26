@@ -1,0 +1,19 @@
+name: Run tests
+on:
+  push:
+    branches:
+      - "**"
+
+env:
+  CI: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout/@v4
+      - name: "Test"
+        run: |
+          npm ci
+          npm test

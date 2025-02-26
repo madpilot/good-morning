@@ -17,16 +17,27 @@ const UsersSchema = zod.object({
   nicknames: zod.optional(zod.array(zod.string())),
 });
 
+const GoodnightSchema = zod.object({
+  images: zod.array(zod.string()),
+  background_color: zod.string(),
+  speed: zod.number(),
+  transition_speed: zod.optional(zod.number()),
+  start: zod.string(),
+  end: zod.string(),
+});
+
 const ConfigSchema = zod.object({
   title: zod.string(),
   accounts: zod.array(iCloudAccountSchema),
   users: zod.array(UsersSchema),
+  goodnight: zod.optional(GoodnightSchema),
 });
 
 export type Config = zod.infer<typeof ConfigSchema>;
 
 export type iCloudAccountConfig = zod.infer<typeof iCloudAccountSchema>;
-export type UsersSchema = zod.infer<typeof UsersSchema>;
+export type UsersConfig = zod.infer<typeof UsersSchema>;
+export type GoodnightConfig = zod.infer<typeof GoodnightSchema>;
 
 export async function readConfig(): Promise<Config> {
   const data = await readFile("./config.yaml", { encoding: "utf-8" });
