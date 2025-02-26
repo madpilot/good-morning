@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import styles from "./goodnight.module.css";
 import { Time } from "../time";
 import { Date } from "../date";
-import { DateTime } from "luxon";
 import { isVisible } from "./utils/isVisible";
 
 type ImageCarouselProps = {
