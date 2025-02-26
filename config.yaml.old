@@ -1,0 +1,31 @@
+title: Burntos Family
+accounts:
+  - type: icloud
+    username: myles@madpilot.com.au
+    password: yevj-qjgd-fpxk-ciav
+    calendars:
+      - https://caldav.icloud.com/119110887/calendars/133c573f-95e5-4dff-aa7d-daea5d16e738/
+users:
+  - name: Myles
+    color: "#3788d8"
+  - name: Nerida
+    color: "#37d876"
+    nicknames:
+      - Ned
+  - name: Hugo
+    color: "#d83737"
+  - name: Hazel
+    color: "#d837d5"
+meal_plan:
+  type: "tandoor"
+  server: https://recipes.burntos.com
+  api_key: "tda_b531dbde_76f3_47b9_a0fd_e7c15a9277b4"
+goodnight:
+  background_color: "#000000"
+  images:
+    - https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?q=80&w=3165&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D
+    - https://images.unsplash.com/photo-1536746803623-cef87080bfc8?q=80&w=3085&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D
+  speed: 15
+  transition_speed: 5
+  start: "22:22"
+  end: "06:15"

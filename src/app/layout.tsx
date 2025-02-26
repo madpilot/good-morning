@@ -2,6 +2,7 @@ import NavItem from "@/components/nav-item";
 import "./layout.css";
 import styles from "./layout.module.css";
 import { Header } from "@/components/header";
+import Goodnight from "@/components/goodnight/Wrapper";
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -11,6 +12,7 @@ export default async function RootLayout({ children }: LayoutProps) {
   return (
     <html lang="en">
       <body>
+        <Goodnight />
         <div className={styles.layout}>
           <Header className={styles.header} />
           <nav className={styles.nav}>

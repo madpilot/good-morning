@@ -7,18 +7,18 @@ type TimeProps = {
   className?: string;
 };
 
-export function Time({ className }: TimeProps) {
-  const [time, updateTime] = useState<string>(
-    DateTime.now().toFormat("h:mm a")
+export function Date({ className }: TimeProps) {
+  const [date, updateDate] = useState<string>(
+    DateTime.now().toFormat("MMM dd, yyyy")
   );
 
   useEffect(() => {
     const id = setInterval(
-      () => updateTime(DateTime.now().toFormat("h:mm a")),
+      () => updateDate(DateTime.now().toFormat("MMM dd, yyyy")),
       500
     );
     return () => clearInterval(id);
   }, []);
 
-  return <div className={className}>{time}</div>;
+  return <div className={className}>{date}</div>;
 }
