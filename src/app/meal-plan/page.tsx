@@ -2,18 +2,18 @@ import { readConfig } from "@/config";
 import { fetchMealPlan } from "@/data/mealPlan";
 import { DateTime } from "luxon";
 import { Metadata } from "next";
+import { MealPlanTable } from "@/components/meal-plan/MealPlan";
 
 export default async function MealPlan(): Promise<React.ReactElement> {
   const config = await readConfig();
   const mealPlan = await fetchMealPlan(config.meal_plan);
-
   if (typeof mealPlan === "undefined") {
     return <></>;
   }
 
   return (
     <section>
-      <h1>Meal Plan</h1>
+      <MealPlanTable config={config} mealPlan={mealPlan} />
       {mealPlan
         .sort((x, y) => x.day.localeCompare(y.day))
         .map((plan) => (
