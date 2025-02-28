@@ -23,10 +23,12 @@ export default function FullCalendar({ config }: FullCalendarProps) {
 
   useEffect(() => {
     const id = setInterval(() => {
+      const now = DateTime.now();
       if (calendarRef?.current) {
+        calendarRef.current.getApi().gotoDate(now.toISO());
         calendarRef.current.getApi().refetchEvents();
       }
-      setScrollTime(DateTime.now().startOf("hour").toFormat("HH:mm:ss"));
+      setScrollTime(now.startOf("hour").toFormat("HH:mm:ss"));
     }, RELOAD_TIME * 1000);
 
     return () => clearInterval(id);
