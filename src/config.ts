@@ -8,7 +8,16 @@ const iCloudAccountSchema = zod.object({
   type: zod.enum(["icloud"]),
   username: zod.string(),
   password: zod.string(),
-  calendars: zod.array(zod.string()),
+  calendars: zod.array(
+    zod.union([
+      zod.string(),
+      zod.object({
+        slug: zod.string(),
+        url: zod.string(),
+        color: zod.optional(zod.string()),
+      }),
+    ])
+  ),
 });
 
 const UsersSchema = zod.object({

@@ -1,6 +1,6 @@
 "use server";
 
-import { DAVClient, getBasicAuthHeaders } from "tsdav";
+import { DAVCalendar, DAVClient, getBasicAuthHeaders } from "tsdav";
 import { DateTime } from "luxon";
 import { iCloudAccountConfig } from "@/config";
 import IcalExpander from "ical-expander";
@@ -43,6 +43,7 @@ export type CalendarEvent = {
   title: string;
   start: string;
   end: string;
+  slug?: string | undefined;
 };
 
 export async function fetchEvents(
@@ -53,12 +54,30 @@ export async function fetchEvents(
   const client = auth(config);
   await client.login();
 
-  const calendars = await client.fetchCalendars();
-  const family = calendars.find((calendar) =>
-    config.calendars.includes(calendar.url)
+  const davCalendars = await client.fetchCalendars();
+  const configCalendars = config.calendars.map<{
+    url: string;
+    color?: string;
+    slug?: string;
+  }>((calendar) =>
+    typeof calendar === "string" ? { url: calendar } : calendar
   );
-  if (!family) {
-    console.warn("Family calendar not found");
+
+  const found = davCalendars.reduce<
+    Array<DAVCalendar & { slug?: string | undefined }>
+  >((acc, calendar) => {
+    configCalendars.forEach((check) => {
+      if (check.url === calendar.url) {
+        acc.push({
+          ...calendar,
+          slug: check.slug,
+        });
+      }
+    });
+    return acc;
+  }, []);
+
+  if (found.length === 0) {
     return [];
   }
 
@@ -72,33 +91,48 @@ export async function fetchEvents(
     throw new Error("Invalid end date");
   }
 
-  const objects = await client.fetchCalendarObjects({
-    calendar: family,
-    timeRange: {
-      start: start,
-      end: end,
-    },
-  });
-
-  const parsed = objects.map((object) =>
-    new IcalExpander({ ics: object.data, maxIterations: 100 }).between(
-      new Date(start),
-      new Date(end)
+  const objects = await Promise.all(
+    found.map(async (calendar) =>
+      (
+        await client.fetchCalendarObjects({
+          calendar: calendar,
+          timeRange: {
+            start: start,
+            end: end,
+          },
+        })
+      ).map((calendarEvent) => ({
+        ...calendarEvent,
+        slug: calendar.slug,
+      }))
     )
   );
 
-  return parsed.reduce<Array<CalendarEvent>>((acc, expended) => {
+  const parsed = objects.flat().map((object) => {
+    const expanded = new IcalExpander({
+      ics: object.data,
+      maxIterations: 100,
+    }).between(new Date(start), new Date(end));
+    return {
+      ...expanded,
+      slug: object.slug,
+    };
+  });
+
+  return parsed.reduce<Array<CalendarEvent>>((acc, expanded) => {
     return [
       ...acc,
-      ...expended.events.map((event) => ({
+      ...expanded.events.map<CalendarEvent>((event) => ({
         start: event.startDate.toJSDate().toISOString(),
         end: event.endDate.toJSDate().toISOString(),
         title: event.summary,
+        slug: expanded.slug,
       })),
-      ...expended.occurrences.map((occurrence) => ({
+      ...expanded.occurrences.map<CalendarEvent>((occurrence) => ({
         start: occurrence.startDate.toJSDate().toISOString(),
         end: occurrence.endDate.toJSDate().toISOString(),
         title: occurrence.item.summary,
+        slug: expanded.slug,
       })),
     ];
   }, []);

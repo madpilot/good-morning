@@ -15,39 +15,62 @@ type FullCalendarProps = {
 const RELOAD_TIME = 900 as const;
 export default function FullCalendar({ config }: FullCalendarProps) {
   const calendarRef = useRef<FullCalendarKlass>(null);
-  const [scrollTime, setScrollTime] = useState<string>(
-    DateTime.now().startOf("hour").toFormat("HH:mm:ss")
-  );
 
   const [isLoading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    const id = setInterval(() => {
+    const update = () => {
+      const api = calendarRef?.current?.getApi();
       const now = DateTime.now();
-      if (calendarRef?.current) {
-        calendarRef.current.getApi().gotoDate(now.toISO());
-        calendarRef.current.getApi().refetchEvents();
+      if (api) {
+        api.gotoDate(now.toISO());
+        api.refetchEvents();
+        api.scrollToTime(now.startOf("hour").toFormat("HH:mm:ss"));
       }
-      setScrollTime(now.startOf("hour").toFormat("HH:mm:ss"));
+    };
+
+    const id = setInterval(() => {
+      update();
     }, RELOAD_TIME * 1000);
 
+    update();
+
     return () => clearInterval(id);
-  }, [setScrollTime]);
+  }, [calendarRef]);
 
   useLayoutEffect(() => {
     // Heh, this is terrible...
     const styleEl = document.createElement("style");
-    styleEl.textContent = config.users
-      .map((user) => {
-        const color = user.color || "var(--default-avatar-color)";
-        return `
+    const userStyles = config.users.map((user) => {
+      const color = user.color || "var(--default-avatar-color)";
+      return `
         .fc-v-event.user-${user.name.toLowerCase()} {
           background-color: ${color};
           border-color: ${color};
         }
       `;
-      })
-      .join("\n");
+    });
+    const calendarStyles = config.accounts
+      .filter((account) => typeof account.calendars !== "undefined")
+      .map((account) => account.calendars)
+      .flat()
+      .map((calendar) => {
+        if (
+          typeof calendar === "object" &&
+          typeof calendar.slug === "string" &&
+          typeof calendar.color === "string"
+        ) {
+          return `
+            .fc-v-event.calendar-${calendar.slug.toLowerCase()} {
+              background-color: ${calendar.color};
+              border-color: ${calendar.color};
+            }
+          `;
+        }
+        return ``;
+      });
+
+    styleEl.textContent = [...calendarStyles, ...userStyles].join("\n");
     document.head.append(styleEl);
     return () => styleEl.remove();
   }, [config]);
@@ -78,7 +101,6 @@ export default function FullCalendar({ config }: FullCalendarProps) {
         themeSystem="standard"
         nowIndicator={true}
         headerToolbar={false}
-        scrollTime={scrollTime}
         loading={setLoading}
         dayHeaderContent={(args) => {
           const date = DateTime.fromJSDate(args.date);
