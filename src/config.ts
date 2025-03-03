@@ -4,20 +4,22 @@ import zod from "zod";
 import { readFile } from "fs/promises";
 import { parse } from "yaml";
 
+const CalendarSchema = zod.array(
+  zod.union([
+    zod.string(),
+    zod.object({
+      slug: zod.string(),
+      url: zod.string(),
+      color: zod.optional(zod.string()),
+    }),
+  ])
+);
+
 const iCloudAccountSchema = zod.object({
   type: zod.enum(["icloud"]),
   username: zod.string(),
   password: zod.string(),
-  calendars: zod.array(
-    zod.union([
-      zod.string(),
-      zod.object({
-        slug: zod.string(),
-        url: zod.string(),
-        color: zod.optional(zod.string()),
-      }),
-    ])
-  ),
+  calendars: CalendarSchema,
 });
 
 const UsersSchema = zod.object({
@@ -43,7 +45,7 @@ const ConfigSchema = zod.object({
 });
 
 export type Config = zod.infer<typeof ConfigSchema>;
-
+export type CalendarConfig = zod.infer<typeof CalendarSchema>;
 export type iCloudAccountConfig = zod.infer<typeof iCloudAccountSchema>;
 export type UsersConfig = zod.infer<typeof UsersSchema>;
 export type GoodnightConfig = zod.infer<typeof GoodnightSchema>;
