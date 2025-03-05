@@ -91,12 +91,14 @@ export class DAVCalendarAdapter implements ICalendarAdapter {
         ...expanded.events.map<CalendarEvent>((event) => ({
           start: event.startDate.toJSDate().toISOString(),
           end: event.endDate.toJSDate().toISOString(),
+          allDay: event.startDate.isDate && event.endDate.isDate,
           title: event.summary,
           slug: expanded.slug,
         })),
         ...expanded.occurrences.map<CalendarEvent>((occurrence) => ({
           start: occurrence.startDate.toJSDate().toISOString(),
           end: occurrence.endDate.toJSDate().toISOString(),
+          allDay: occurrence.startDate.isDate && occurrence.endDate.isDate,
           title: occurrence.item.summary,
           slug: expanded.slug,
         })),

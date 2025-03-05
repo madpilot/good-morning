@@ -46,7 +46,8 @@
   padding: 0.125rem 0.25rem;
 }
 
-.fc .fc-v-event .fc-event-main {
+.fc .fc-v-event .fc-event-main,
+.fc .fc-h-event .fc-event-main {
   overflow: hidden;
 }
 
@@ -61,7 +62,19 @@
   min-height: 2rem;
 }
 
-.fc-v-event .fc-event-title-container {
+.fc .fc-h-event .fc-event-main-frame {
+  display: grid;
+  grid-template-areas:
+    "title"
+    "time";
+  grid-template-columns: auto;
+  grid-template-rows: auto auto 1fr;
+  padding: 0 0.25rem;
+  min-height: 1rem;
+}
+
+.fc-v-event .fc-event-title-container,
+.fc-h-event .fc-event-title-container {
   font-size: 0.75rem;
   font-weight: bold;
   grid-area: title;
@@ -92,7 +105,8 @@
   text-align: center;
 }
 
-.fc-v-event {
+.fc-v-event,
+.fc-h-event {
   background-color: #aaaaaa;
   border: 1px solid #aaaaaa;
 }
