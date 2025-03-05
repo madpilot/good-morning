@@ -1,5 +1,4 @@
 import { Factory } from "fishery";
-import { DAVObject } from "tsdav";
 import { faker } from "@faker-js/faker";
 import { DateTime } from "luxon";
 
