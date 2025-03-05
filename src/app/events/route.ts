@@ -13,7 +13,12 @@ export async function GET(request: NextRequest) {
     : undefined;
 
   const events = await getEvents(start, end);
-  return Response.json(events);
+  return Response.json(
+    events.map((event) => ({
+      ...event,
+      classNames: event.slug ? [`calendar-${event.slug}`] : [],
+    }))
+  );
 }
 
 // Invalidate every 15 minutes

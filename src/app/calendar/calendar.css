@@ -82,10 +82,14 @@
 
 .fc-day-today .fc-day-today-highlight {
   background-color: #fb7059;
+  display: inline-block;
   color: #fff;
+  width: 1.5rem;
+  height: 1.5rem;
   border-radius: 100%;
   padding: 0.25rem;
   font-size: 0.66rem;
+  text-align: center;
 }
 
 .fc-v-event {
