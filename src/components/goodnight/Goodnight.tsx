@@ -7,6 +7,8 @@ import styles from "./goodnight.module.css";
 import { Time } from "../time";
 import { Date } from "../date";
 import { isVisible } from "./utils/isVisible";
+import { salutation } from "./utils/salutation";
+import { DateTime } from "luxon";
 
 type ImageCarouselProps = {
   images: Array<string>;
@@ -61,9 +63,15 @@ export function Goodnight({ config }: GoodnightProps): React.ReactElement {
     config;
 
   const [visible, setVisible] = useState<boolean>(isVisible(start, end));
+  const [salutationString, setSalutationString] = useState<string>(
+    salutation(DateTime.now())
+  );
 
   useEffect(() => {
-    const id = setInterval(() => setVisible(isVisible(start, end)), 500);
+    const id = setInterval(() => {
+      setVisible(isVisible(start, end));
+      setSalutationString(salutation(DateTime.now()));
+    }, 500);
     return () => clearInterval(id);
   }, [start, end, visible]);
 
@@ -82,7 +90,7 @@ export function Goodnight({ config }: GoodnightProps): React.ReactElement {
         />
       )}
       <div className={styles.content}>
-        <h1 className={styles.title}>Goodnight!</h1>
+        <h1 className={styles.title}>{salutationString}</h1>
         <Time className={styles.time} />
         <Date className={styles.date} />
       </div>
