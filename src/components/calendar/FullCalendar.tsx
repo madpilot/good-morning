@@ -48,6 +48,10 @@ export default function FullCalendar({ config }: FullCalendarProps) {
           background-color: ${color};
           border-color: ${color};
         }
+        .fc-h-event.user-${user.name.toLowerCase()} {
+          background-color: ${color};
+          border-color: ${color};
+        }
       `;
     });
     const calendarStyles = config.accounts
@@ -62,6 +66,10 @@ export default function FullCalendar({ config }: FullCalendarProps) {
         ) {
           return `
             .fc-v-event.calendar-${calendar.slug.toLowerCase()} {
+              background-color: ${calendar.color};
+              border-color: ${calendar.color};
+            }
+            .fc-h-event.calendar-${calendar.slug.toLowerCase()} {
               background-color: ${calendar.color};
               border-color: ${calendar.color};
             }

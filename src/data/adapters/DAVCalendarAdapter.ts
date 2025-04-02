@@ -5,11 +5,14 @@ import { CalendarConfig } from "@/config";
 import { DAVCalendar, DAVClient, DAVObject } from "tsdav";
 import IcalExpander from "ical-expander";
 
-type Decorated<T> = T & { slug?: string | undefined };
-type NormalizedConfig = {
-  url: string;
-  slug?: string;
+type Decorated<T> = T & {
+  slug?: string | undefined;
+  type?: "birthday" | undefined;
 };
+type NormalizedConfig = Omit<
+  Exclude<CalendarConfig[number], string>,
+  "slug"
+> & { slug?: string };
 type ParsedEvents = ReturnType<InstanceType<typeof IcalExpander>["between"]>;
 
 export class DAVCalendarAdapter implements ICalendarAdapter {
@@ -31,7 +34,11 @@ export class DAVCalendarAdapter implements ICalendarAdapter {
           (check) => check.url === calendar.url
         );
         if (configCalendar) {
-          acc.push({ ...calendar, slug: configCalendar.slug });
+          acc.push({
+            ...calendar,
+            slug: configCalendar.slug,
+            type: configCalendar.type,
+          });
         }
         return acc;
       },
@@ -58,6 +65,7 @@ export class DAVCalendarAdapter implements ICalendarAdapter {
           return fetched.map<Decorated<DAVObject>>((calendarEvent) => ({
             ...calendarEvent,
             slug: calendar.slug,
+            type: calendar.type,
           }));
         })
       )
@@ -78,8 +86,21 @@ export class DAVCalendarAdapter implements ICalendarAdapter {
       return {
         ...expanded,
         slug: event.slug,
+        type: event.type,
       } satisfies Decorated<ParsedEvents>;
     });
+  }
+
+  private prependEmoji(
+    type: Exclude<CalendarConfig[number], string>["type"],
+    text: string
+  ): string {
+    switch (type) {
+      case "birthday":
+        return `🎂 ${text}`;
+      default:
+        return text;
+    }
   }
 
   private transform(
@@ -91,13 +112,15 @@ export class DAVCalendarAdapter implements ICalendarAdapter {
         ...expanded.events.map<CalendarEvent>((event) => ({
           start: event.startDate.toJSDate().toISOString(),
           end: event.endDate.toJSDate().toISOString(),
-          title: event.summary,
+          allDay: event.startDate.isDate && event.endDate.isDate,
+          title: this.prependEmoji(expanded.type, event.summary),
           slug: expanded.slug,
         })),
         ...expanded.occurrences.map<CalendarEvent>((occurrence) => ({
           start: occurrence.startDate.toJSDate().toISOString(),
           end: occurrence.endDate.toJSDate().toISOString(),
-          title: occurrence.item.summary,
+          allDay: occurrence.startDate.isDate && occurrence.endDate.isDate,
+          title: this.prependEmoji(expanded.type, occurrence.item.summary),
           slug: expanded.slug,
         })),
       ];

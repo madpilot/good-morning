@@ -11,6 +11,7 @@ const CalendarSchema = zod.array(
       slug: zod.string(),
       url: zod.string(),
       color: zod.optional(zod.string()),
+      type: zod.optional(zod.enum(["birthday"])),
     }),
   ])
 );

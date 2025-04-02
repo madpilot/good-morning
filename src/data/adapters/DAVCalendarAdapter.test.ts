@@ -123,42 +123,70 @@ describe("DAVCalendarAdapter", () => {
           expect(results[1].slug).toBeUndefined();
         });
       });
+
+      describe("long form calendar object", () => {
+        it("generate slugs", async () => {
+          const calendarOne = faker.internet.url();
+          const calendarThree = faker.internet.url();
+          config = [
+            {
+              url: calendarOne,
+              slug: "calendar-1",
+            },
+            {
+              url: faker.internet.url(),
+              slug: "calendar-2",
+            },
+            {
+              url: calendarThree,
+              slug: "calendar-3",
+            },
+          ];
+          (mockClient.fetchCalendars as jest.Mock).mockResolvedValue([
+            DavCalendarFactory.build({ url: calendarOne }),
+            DavCalendarFactory.build(),
+            DavCalendarFactory.build({ url: calendarThree }),
+          ]);
+          (mockClient.fetchCalendarObjects as jest.Mock)
+            .mockResolvedValueOnce([
+              DavObjectFactory.build({ url: calendarOne }),
+            ])
+            .mockResolvedValueOnce([
+              DavObjectFactory.build({ url: calendarThree }),
+            ]);
+
+          startDay = DateTime.now().startOf("week");
+          endDay = DateTime.now().endOf("week");
+          const results = await subject();
+          expect(results[0].slug).toBe("calendar-1");
+          expect(results[1].slug).toBe("calendar-3");
+        });
+      });
     });
 
-    describe("fullform calendar object", () => {
-      it("generate slugs", async () => {
-        const calendarOne = faker.internet.url();
-        const calendarThree = faker.internet.url();
-        config = [
-          {
-            url: calendarOne,
-            slug: "calendar-1",
-          },
-          {
-            url: faker.internet.url(),
-            slug: "calendar-2",
-          },
-          {
-            url: calendarThree,
-            slug: "calendar-3",
-          },
-        ];
-        (mockClient.fetchCalendars as jest.Mock).mockResolvedValue([
-          DavCalendarFactory.build({ url: calendarOne }),
-          DavCalendarFactory.build(),
-          DavCalendarFactory.build({ url: calendarThree }),
-        ]);
-        (mockClient.fetchCalendarObjects as jest.Mock)
-          .mockResolvedValueOnce([DavObjectFactory.build({ url: calendarOne })])
-          .mockResolvedValueOnce([
-            DavObjectFactory.build({ url: calendarThree }),
+    describe("Calendar types", () => {
+      describe("birthday", () => {
+        it("prepends the birthday cake emoji", async () => {
+          const calendarOne = faker.internet.url();
+          config = [
+            {
+              url: calendarOne,
+              slug: "calendar-1",
+              type: "birthday",
+            },
+          ];
+          (mockClient.fetchCalendars as jest.Mock).mockResolvedValue([
+            DavCalendarFactory.build({ url: calendarOne }),
+          ]);
+          (mockClient.fetchCalendarObjects as jest.Mock).mockResolvedValueOnce([
+            DavObjectFactory.build({ url: calendarOne }),
           ]);
 
-        startDay = DateTime.now().startOf("week");
-        endDay = DateTime.now().endOf("week");
-        const results = await subject();
-        expect(results[0].slug).toBe("calendar-1");
-        expect(results[1].slug).toBe("calendar-3");
+          startDay = DateTime.now().startOf("week");
+          endDay = DateTime.now().endOf("week");
+          const results = await subject();
+          expect(results[0].title.startsWith("🎂 ")).toBeTruthy();
+        });
       });
     });
   });
